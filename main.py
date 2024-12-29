@@ -4,7 +4,7 @@
 import pygame
 # import time   #old Method of limiting cpu
 from constants import *
-from circleshape import CircleShape
+#from circleshape import CircleShape
 from player import Player
 
 
@@ -13,23 +13,31 @@ def main():
     pygame.init()
     print(f"Running Pygame version: {pygame.__version__}")
 
-    print("Starting asteroids!")
+    #creating GUI Window https://www.pygame.org/docs/ref/display.html#pygame.display.set_mode
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     print(f"Screen width: {SCREEN_WIDTH}\nScreen height: {SCREEN_HEIGHT}")
+    
+    print("Starting asteroids!")
 
     #https://www.pygame.org/docs/ref/time.html#pygame.time.Clock
     delta_time_clock = pygame.time.Clock()
     dt = 0
     print(f"Inititializing Delta Time Object {delta_time_clock} at dt:{dt}")
-    
 
-    #creating GUI Window https://www.pygame.org/docs/ref/display.html#pygame.display.set_mode
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    #Groups to handle objects
+    updatable_objects = pygame.sprite.Group()
+    drawable_objects = pygame.sprite.Group()
+
+
 
     #Helper variables begin:
     fps_time_to_stdout_timer = 0 #Accumulates delta time
 
+    #Make Player(s) Updatable and Drawable https://docs.python.org/3/tutorial/classes.html#class-and-instance-variables
+    Player.containers = (updatable_objects, drawable_objects)
     #Instanciate the player with a default center of screen position
     user_player1 = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+    
 
 
 
@@ -43,13 +51,13 @@ def main():
         #Fill Screen: https://www.pygame.org/docs/ref/surface.html#pygame.Surface.fill
         screen.fill((0,0,0))
         
-        #print("Creating Player")
-        user_player1.draw(screen)
+        #updates objects in the updateable_objects
+        for object in updatable_objects:
+            object.update(dt)
+
+        for object in drawable_objects:
+            object.draw(screen)
         
-        #updates player information
-        user_player1.update(dt)
-
-
 
         #Refresh Screen: https://www.pygame.org/docs/ref/display.html#pygame.display.flip
         pygame.display.flip()
