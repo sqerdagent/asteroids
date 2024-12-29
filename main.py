@@ -4,26 +4,10 @@
 import pygame
 # import time   #old Method of limiting cpu
 from constants import *
-# from circleshape import CircleShape
+from circleshape import CircleShape
+from player import Player
 
-#https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Sprite
-class CircleShape(pygame.sprite.Sprite):
-    # Constructor. Pass in the color of the block,
-    # and its x and y position
-    def __init__(self, color, width, height):
-       # Call the parent class (Sprite) constructor
-       pygame.sprite.Sprite.__init__(self)
 
-       # Create an image of the block, and fill it with a color.
-       # This could also be an image loaded from the disk.
-       # self.image = pygame.Surface([width, height])
-       # self.image.fill(color)
-
-       # Fetch the rectangle object that has the dimensions of the image
-       # Update the position of this object by setting the values of rect.x and rect.y
-       # self.rect = self.image.get_rect()
-
-    
 def main():
     #Initializing pygame module see: https://www.pygame.org/docs/ref/pygame.html
     pygame.init()
@@ -44,6 +28,9 @@ def main():
     #Helper variables begin:
     fps_time_to_stdout_timer = 0 #Accumulates delta time
 
+    #Instanciate the player with a default center of screen position
+    user_player1 = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+
 
 
     while True:
@@ -55,21 +42,17 @@ def main():
 
         #Fill Screen: https://www.pygame.org/docs/ref/surface.html#pygame.Surface.fill
         screen.fill((0,0,0))
+        
+        #print("Creating Player")
+        user_player1.draw(screen)
+        
+        #updates player information
+        user_player1.update(dt)
+
+
+
         #Refresh Screen: https://www.pygame.org/docs/ref/display.html#pygame.display.flip
         pygame.display.flip()
-
-
-        
-
-
-
-
-
-
-
-
-
-
 
         #update the clock https://www.pygame.org/docs/ref/time.html#pygame.time.Clock.tick
         dt = delta_time_clock.tick(60)/1000
@@ -79,6 +62,7 @@ def main():
         fps_time_to_stdout_timer += dt
         if fps_time_to_stdout_timer >=5:
             print(f"delta_time_clock is: {delta_time_clock} dt is: {dt}")
+            #print(f"Rotation: {user_player1.rotation}")
             fps_time_to_stdout_timer = 0
         
         
