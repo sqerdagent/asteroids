@@ -2,12 +2,14 @@
 # the open-source pygame library
 # throughout this file
 import pygame
+import sys
 # import time   #old Method of limiting cpu
 from constants import *
 from circleshape import CircleShape
 from player import Player
 from asteroid import Asteroid
 from asteroidfield import AsteroidField
+from shot import Shot
 
 def main():
     #Initializing pygame module see: https://www.pygame.org/docs/ref/pygame.html
@@ -30,6 +32,7 @@ def main():
     updatable_objects = pygame.sprite.Group()
     drawable_objects = pygame.sprite.Group()
     space_rocks = pygame.sprite.Group() #named to be distict from Asteroid itself
+    shots = pygame.sprite.Group()
 
     #Make Player(s) Updatable and Drawable https://docs.python.org/3/tutorial/classes.html#class-and-instance-variables
     Player.containers = (updatable_objects, drawable_objects)
@@ -39,6 +42,9 @@ def main():
     Asteroid.containers = (space_rocks, updatable_objects, drawable_objects)
     AsteroidField.containers = (updatable_objects)
     level_1_asteroid_field = AsteroidField()
+
+    Shot.containers = (shots, updatable_objects, drawable_objects)
+
 
     #Helper variables begin:
     fps_time_to_stdout_timer = 0 #Accumulates delta time
@@ -61,11 +67,16 @@ def main():
             object.update(dt)
 
         #check to see if an asteroid hits the player
-        for object in space_rocks:
-            if object.collide_check(user_player1):
-                print("Game over!")
+        for space_rock in space_rocks:
+            if space_rock.collide_check(user_player1):
                 #https://docs.python.org/3/library/sys.html#sys.exit
-                raise sys.exit()
+                sys.exit("Game over!")
+
+            for shot in shots:
+                if space_rock.collide_check(shot):
+                    #https://www.pygame.org/docs/ref/sprite.html?highlight=kill#pygame.sprite.Sprite.kill
+                    space_rock.split()
+                    shot.kill()
 
         for object in drawable_objects:
             object.draw(screen)
