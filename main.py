@@ -4,9 +4,10 @@
 import pygame
 # import time   #old Method of limiting cpu
 from constants import *
-#from circleshape import CircleShape
+from circleshape import CircleShape
 from player import Player
-
+from asteroid import Asteroid
+from asteroidfield import AsteroidField
 
 def main():
     #Initializing pygame module see: https://www.pygame.org/docs/ref/pygame.html
@@ -25,19 +26,23 @@ def main():
     print(f"Inititializing Delta Time Object {delta_time_clock} at dt:{dt}")
 
     #Groups to handle objects
+    #https://www.pygame.org/docs/ref/sprite.html#pygame.sprite.Group
     updatable_objects = pygame.sprite.Group()
     drawable_objects = pygame.sprite.Group()
-
-
-
-    #Helper variables begin:
-    fps_time_to_stdout_timer = 0 #Accumulates delta time
+    space_rocks = pygame.sprite.Group() #named to be distict from Asteroid itself
 
     #Make Player(s) Updatable and Drawable https://docs.python.org/3/tutorial/classes.html#class-and-instance-variables
     Player.containers = (updatable_objects, drawable_objects)
     #Instanciate the player with a default center of screen position
     user_player1 = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
-    
+
+    Asteroid.containers = (space_rocks, updatable_objects, drawable_objects)
+    AsteroidField.containers = (updatable_objects)
+    level_1_asteroid_field = AsteroidField()
+
+    #Helper variables begin:
+    fps_time_to_stdout_timer = 0 #Accumulates delta time
+
 
 
 
@@ -57,6 +62,8 @@ def main():
 
         for object in drawable_objects:
             object.draw(screen)
+
+        
         
 
         #Refresh Screen: https://www.pygame.org/docs/ref/display.html#pygame.display.flip
