@@ -1,13 +1,15 @@
 #Stores python scripts for the Player Ojbect
 import pygame
 from circleshape import CircleShape
-from constants import PLAYER_RADIUS, PLAYER_TURN_SPEED, PLAYER_SPEED
+from constants import *
+from shot import Shot
 
 class Player(CircleShape):
     def __init__(self, int_x, int_y):
         #Kicking values to circleshape.py
         super().__init__(int_x, int_y, PLAYER_RADIUS)
         self.rotation = 0
+        self.shoot_cooldown = PLAYER_SHOOT_COOLDOWN
     
     def draw(self, screen):
         #https://www.pygame.org/docs/ref/draw.html#pygame.draw.polygon
@@ -15,6 +17,12 @@ class Player(CircleShape):
         pygame.draw.polygon(screen, (255,255,255), (self.triangle()), 2)
 
     def update(self, dt):
+        self.shoot_cooldown -= dt
+
+        #lets players "charge" a few shots by not firing
+        if self.shoot_cooldown < -.5:
+           self.shoot_cooldown = -.5
+
         #Keyboard Inputs
         #https://www.pygame.org/docs/ref/key.html#pygame.key.get_pressed
         keys = pygame.key.get_pressed()
@@ -24,6 +32,14 @@ class Player(CircleShape):
         
         if keys[pygame.K_w] or keys[pygame.K_s]:
             self.move(dt, keys)
+
+        if keys[pygame.K_SPACE]:
+            if self.shoot_cooldown < 0:
+                self.shoot()
+                self.shoot_cooldown += PLAYER_SHOOT_COOLDOWN
+                
+
+
 
 
     def rotate(self, dt, keys):
@@ -49,6 +65,14 @@ class Player(CircleShape):
         if keys[pygame.K_s]:
             forward_or_backward -=1
         self.position += forward * PLAYER_SPEED * dt * forward_or_backward
+
+
+    def shoot(self):
+        print("Attempting to create shot")
+        shot = Shot(self.position.x, self.position.y, SHOT_RADIUS)
+        shot.velocity = pygame.Vector2(0, 1).rotate(self.rotation) * PLAYER_SHOOT_SPEED
+    
+
 
     #in the player class        
     def triangle(self):
