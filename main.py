@@ -60,6 +60,13 @@ def main():
         for object in updatable_objects:
             object.update(dt)
 
+        #check to see if an asteroid hits the player
+        for object in space_rocks:
+            if object.collide_check(user_player1):
+                print("Game over!")
+                #https://docs.python.org/3/library/sys.html#sys.exit
+                raise sys.exit()
+
         for object in drawable_objects:
             object.draw(screen)
 
